@@ -1,4 +1,5 @@
 # Project Title
+LMS
 
 ## Description
 A modern learning management system (LMS) designed to transform your learning experience with interactive lessons, smart quizzes, and personalized progress tracking. The platform features a structured learning path, interactive content, and an achievement system to monitor your progress and earn certificates.
@@ -12,8 +13,8 @@ A modern learning management system (LMS) designed to transform your learning ex
 ### Cloning the Repository
 To clone this repository, run the following command:
 ```bash
-git clone https://github.com/yourusername/your-repo-name.git
-cd your-repo-name
+git clone https://github.com/Pranav-scogo/lms-2
+cd lms
 ```
 
 ### Installing Dependencies
