@@ -1,6 +1,6 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { GraduationCap } from "lucide-react"
+import { GraduationCap, Upload, BarChart, Home } from "lucide-react"
 
 export default function Header() {
   return (
@@ -12,7 +12,12 @@ export default function Header() {
             <span>SIA LMS</span>
           </Link>
           <nav className="hidden md:flex items-center gap-6">
-            <Link href="/dashboard" className="text-sm font-medium hover:text-primary">
+            {/* <Link href="/" className="text-sm font-medium hover:text-primary flex items-center gap-1">
+              <Home className="h-4 w-4" />
+              Home
+            </Link> */}
+            <Link href="/dashboard" className="text-sm font-medium hover:text-primary flex items-center gap-1">
+              <BarChart className="h-4 w-4" />
               Dashboard
             </Link>
             <Link href="/learn" className="text-sm font-medium hover:text-primary">
@@ -24,10 +29,15 @@ export default function Header() {
           </nav>
         </div>
         <div className="flex items-center gap-4">
-          <Button variant="ghost" className="hover:text-primary">
-            Login
+          <Button variant="outline" asChild className="hover:bg-primary/10">
+            <Link href="/upload" className="flex items-center gap-1">
+              <Upload className="h-4 w-4" />
+              Upload Course
+            </Link>
           </Button>
-          <Button>Get Started</Button>
+          {/* <Button asChild>
+            <Link href="/learn">Get Started</Link>
+          </Button> */}
         </div>
       </div>
     </header>

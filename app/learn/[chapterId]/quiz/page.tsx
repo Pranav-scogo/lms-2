@@ -7,24 +7,44 @@ import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Progress } from "@/components/ui/progress"
 import { sampleCourse } from "@/data/sample-course"
-import { CheckCircle, XCircle, ArrowRight } from "lucide-react"
+import { CheckCircle, XCircle, ArrowRight, Loader2 } from "lucide-react"
 import Link from "next/link"
-import { useParams } from "next/navigation"
-import { useState } from "react"
+import { useParams, useRouter } from "next/navigation"
+import { useState, useEffect } from "react"
 import { cn } from "@/lib/utils"
+import { ProcessPdfResponse } from "@/types/api"
+import { mapApiResponseToCourse } from "@/lib/course-mapper"
+import { Course } from "@/types/course"
 
 export default function ChapterQuizPage() {
   const params = useParams()
+  const router = useRouter()
   const { chapterId } = params
 
-  const chapter = sampleCourse.chapters.find((c) => c.id === chapterId)
+  const [course, setCourse] = useState<Course>(sampleCourse)
+  const [isLoading, setIsLoading] = useState(true)
   const [currentQuestion, setCurrentQuestion] = useState(0)
   const [answers, setAnswers] = useState<number[]>([])
   const [showResults, setShowResults] = useState(false)
 
-  if (!chapter) {
-    return <div>Chapter not found</div>
-  }
+  useEffect(() => {
+    // Check if there's uploaded course data in localStorage
+    const storedData = localStorage.getItem('courseData')
+    
+    if (storedData) {
+      try {
+        const apiResponse = JSON.parse(storedData) as ProcessPdfResponse
+        const mappedCourse = mapApiResponseToCourse(apiResponse)
+        setCourse(mappedCourse)
+      } catch (error) {
+        console.error("Error parsing stored course data:", error)
+      }
+    }
+    
+    setIsLoading(false)
+  }, [])
+
+  const chapter = course.chapters.find((c) => c.id === chapterId)
 
   const handleAnswer = (value: string) => {
     const newAnswers = [...answers]
@@ -33,14 +53,32 @@ export default function ChapterQuizPage() {
   }
 
   const handleNext = () => {
-    if (currentQuestion < chapter.quiz.questions.length - 1) {
+    if (chapter && currentQuestion < chapter.quiz.questions.length - 1) {
       setCurrentQuestion(currentQuestion + 1)
     } else {
       setShowResults(true)
+      
+      // Update chapter progress when quiz is completed
+      if (chapter) {
+        chapter.progress = 100;
+        
+        // Update the total progress of the course
+        const chaptersCount = course.chapters.length;
+        const completedProgress = course.chapters.reduce((sum, ch) => sum + ch.progress, 0);
+        course.totalProgress = Math.round(completedProgress / chaptersCount);
+        
+        // Save the updated progress to localStorage
+        const progressData = JSON.parse(localStorage.getItem('courseProgress') || '{}');
+        progressData[chapter.id] = { progress: 100 };
+        progressData.totalProgress = course.totalProgress;
+        localStorage.setItem('courseProgress', JSON.stringify(progressData));
+      }
     }
   }
 
   const calculateScore = () => {
+    if (!chapter) return 0;
+    
     let correct = 0
     answers.forEach((answer, index) => {
       if (answer === chapter.quiz.questions[index].correctAnswer) {
@@ -50,9 +88,50 @@ export default function ChapterQuizPage() {
     return (correct / chapter.quiz.questions.length) * 100
   }
 
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-[calc(100vh-4rem)]">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    )
+  }
+
+  if (!chapter) {
+    return (
+      <div className="flex flex-col items-center justify-center h-[calc(100vh-4rem)] p-8">
+        <h2 className="text-2xl font-bold mb-4">Chapter not found</h2>
+        <p className="text-muted-foreground text-center mb-8">
+          The chapter you're looking for doesn't exist or hasn't been created yet.
+        </p>
+        <Button asChild>
+          <Link href="/learn">Back to Courses</Link>
+        </Button>
+      </div>
+    )
+  }
+
+  if (!chapter.quiz || chapter.quiz.questions.length === 0) {
+    return (
+      <div className="flex h-[calc(100vh-4rem)]">
+        <CourseSidebar course={course} currentChapterId={chapterId as string} currentSubsectionId="quiz" />
+        <div className="flex-1 overflow-auto bg-muted/10">
+          <div className="container max-w-3xl py-12">
+            <div className="text-center space-y-4">
+              <h2 className="text-3xl font-bold">No Quiz Available</h2>
+              <p className="text-muted-foreground">This chapter doesn't have any quiz questions yet.</p>
+              <Button asChild className="mt-4">
+                <Link href={`/learn/${chapterId}`}>Back to Chapter</Link>
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="flex h-[calc(100vh-4rem)]">
-      <CourseSidebar course={sampleCourse} currentChapterId={chapterId as string} currentSubsectionId="quiz" />
+      <CourseSidebar course={course} currentChapterId={chapterId as string} currentSubsectionId="quiz" />
       <div className="flex-1 overflow-auto bg-muted/10">
         <div className="container max-w-3xl py-12">
           {showResults ? (

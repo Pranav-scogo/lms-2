@@ -1,14 +1,27 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Label } from "@/components/ui/label"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
+import { ProcessPdfResponse, QuizQuestion } from "@/types/api"
 
-const quiz = {
+interface Question {
+  id: number;
+  question: string;
+  options: string[];
+  correctAnswer: number;
+}
+
+interface Quiz {
+  questions: Question[];
+}
+
+// Fallback quiz in case no uploaded quiz is available
+const fallbackQuiz: Quiz = {
   questions: [
     {
       id: 1,
@@ -41,6 +54,35 @@ export default function QuizPage() {
   const [currentQuestion, setCurrentQuestion] = useState(0)
   const [answers, setAnswers] = useState<number[]>([])
   const [showResults, setShowResults] = useState(false)
+  const [quiz, setQuiz] = useState<Quiz>(fallbackQuiz)
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    // Check if there's uploaded course data in localStorage
+    const storedData = localStorage.getItem('courseData')
+    
+    if (storedData) {
+      try {
+        const apiResponse = JSON.parse(storedData) as ProcessPdfResponse
+        
+        // Use the final quiz from the API response
+        if (apiResponse.final_quiz && apiResponse.final_quiz.length > 0) {
+          const formattedQuestions = apiResponse.final_quiz.map((q, index) => ({
+            id: index + 1,
+            question: q.question,
+            options: q.options,
+            correctAnswer: q.correctAnswer,
+          }));
+          
+          setQuiz({ questions: formattedQuestions });
+        }
+      } catch (error) {
+        console.error("Error parsing stored course data:", error)
+      }
+    }
+    
+    setIsLoading(false)
+  }, [])
 
   const handleAnswer = (value: string) => {
     const newAnswers = [...answers]
@@ -64,6 +106,16 @@ export default function QuizPage() {
       }
     })
     return (correct / quiz.questions.length) * 100
+  }
+
+  if (isLoading) {
+    return (
+      <div className="container py-8 max-w-2xl">
+        <div className="text-center">
+          <p>Loading quiz questions...</p>
+        </div>
+      </div>
+    )
   }
 
   if (showResults) {
@@ -114,7 +166,7 @@ export default function QuizPage() {
             </div>
             <p className="text-lg">{quiz.questions[currentQuestion].question}</p>
             <RadioGroup onValueChange={handleAnswer} value={answers[currentQuestion]?.toString()}>
-              {quiz.questions[currentQuestion].options.map((option, index) => (
+              {quiz.questions[currentQuestion].options.map((option: string, index: number) => (
                 <div key={index} className="flex items-center space-x-2">
                   <RadioGroupItem value={index.toString()} id={`q${currentQuestion}-${index}`} />
                   <Label htmlFor={`q${currentQuestion}-${index}`}>{option}</Label>

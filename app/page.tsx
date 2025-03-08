@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button"
-import { GraduationCap, BookOpen, Brain, Trophy, ArrowRight } from "lucide-react"
+import { GraduationCap, BookOpen, Brain, Trophy, ArrowRight, Upload } from "lucide-react"
 import Link from "next/link"
 
 export default function Home() {
@@ -34,8 +34,11 @@ export default function Home() {
                     <ArrowRight className="ml-2 h-5 w-5" />
                   </Link>
                 </Button>
-                <Button size="lg" variant="outline" className="text-lg h-12">
-                  View Courses
+                <Button size="lg" variant="outline" className="text-lg h-12" asChild>
+                  <Link href="/upload">
+                    <Upload className="mr-2 h-5 w-5" />
+                    Upload Course
+                  </Link>
                 </Button>
               </div>
             </div>
@@ -63,6 +66,65 @@ export default function Home() {
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* How It Works Section */}
+      <section className="py-20 bg-muted/30">
+        <div className="container px-4 md:px-6">
+          <div className="text-center max-w-3xl mx-auto mb-16">
+            <h2 className="text-3xl font-bold mb-4">How It Works</h2>
+            <p className="text-muted-foreground">
+              Follow these simple steps to start your learning journey with SIA LMS.
+            </p>
+          </div>
+          
+          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            <div className="relative">
+              <div className="bg-card p-8 rounded-3xl border relative z-10">
+                <div className="h-12 w-12 rounded-full bg-primary/20 flex items-center justify-center mb-4">
+                  <span className="text-xl font-bold text-primary">1</span>
+                </div>
+                <h3 className="font-semibold mb-2">Upload Your Course</h3>
+                <p className="text-muted-foreground">Upload a PDF document with your learning material.</p>
+              </div>
+              <div className="absolute top-1/2 right-0 translate-x-1/2 translate-y-[-50%] hidden md:block">
+                <ArrowRight className="h-8 w-8 text-muted-foreground/40" />
+              </div>
+            </div>
+            
+            <div className="relative">
+              <div className="bg-card p-8 rounded-3xl border relative z-10">
+                <div className="h-12 w-12 rounded-full bg-primary/20 flex items-center justify-center mb-4">
+                  <span className="text-xl font-bold text-primary">2</span>
+                </div>
+                <h3 className="font-semibold mb-2">Learn at Your Pace</h3>
+                <p className="text-muted-foreground">Go through the generated chapters and sections at your own pace.</p>
+              </div>
+              <div className="absolute top-1/2 right-0 translate-x-1/2 translate-y-[-50%] hidden md:block">
+                <ArrowRight className="h-8 w-8 text-muted-foreground/40" />
+              </div>
+            </div>
+            
+            <div className="relative">
+              <div className="bg-card p-8 rounded-3xl border relative z-10">
+                <div className="h-12 w-12 rounded-full bg-primary/20 flex items-center justify-center mb-4">
+                  <span className="text-xl font-bold text-primary">3</span>
+                </div>
+                <h3 className="font-semibold mb-2">Test Your Knowledge</h3>
+                <p className="text-muted-foreground">Take quizzes to test your understanding and track your progress.</p>
+              </div>
+            </div>
+          </div>
+          
+          <div className="flex justify-center mt-16">
+            <Button size="lg" className="text-lg h-12" asChild>
+              <Link href="/upload">
+                Get Started Now
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Link>
+            </Button>
           </div>
         </div>
       </section>
