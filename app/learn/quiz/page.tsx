@@ -110,7 +110,7 @@ export default function QuizPage() {
 
   if (isLoading) {
     return (
-      <div className="container py-8 max-w-2xl">
+      <div className="flex items-center justify-center min-h-[80vh] w-full">
         <div className="text-center">
           <p>Loading quiz questions...</p>
         </div>
@@ -121,66 +121,74 @@ export default function QuizPage() {
   if (showResults) {
     const score = calculateScore()
     return (
-      <div className="container py-8 max-w-2xl">
-        <Card>
-          <CardContent className="pt-6">
-            <div className="text-center space-y-4">
-              <h2 className="text-2xl font-bold">Quiz Results</h2>
-              <div className="text-4xl font-bold text-primary">{score}%</div>
-              <p className="text-muted-foreground">
-                You got {Math.round((score / 100) * quiz.questions.length)} out of {quiz.questions.length} questions
-                correct
-              </p>
-            </div>
-          </CardContent>
-          <CardFooter className="flex justify-center gap-4">
-            <Button
-              variant="outline"
-              onClick={() => {
-                setCurrentQuestion(0)
-                setAnswers([])
-                setShowResults(false)
-              }}
-            >
-              Try Again
-            </Button>
-            <Button asChild>
-              <Link href="/dashboard">View Progress</Link>
-            </Button>
-          </CardFooter>
-        </Card>
+      <div className="flex items-center justify-center min-h-[80vh] w-full">
+        <div className="container py-8 max-w-2xl">
+          <Card className="shadow-md">
+            <CardContent className="pt-8 pb-6">
+              <div className="text-center space-y-6">
+                <h2 className="text-3xl font-bold">Quiz Results</h2>
+                <div className="text-5xl font-bold text-primary">{score}%</div>
+                <p className="text-muted-foreground">
+                  You got {Math.round((score / 100) * quiz.questions.length)} out of {quiz.questions.length} questions
+                  correct
+                </p>
+              </div>
+            </CardContent>
+            <CardFooter className="flex justify-center gap-4 pb-6">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setCurrentQuestion(0)
+                  setAnswers([])
+                  setShowResults(false)
+                }}
+              >
+                Try Again
+              </Button>
+              <Button asChild>
+                <Link href="/dashboard">View Progress</Link>
+              </Button>
+            </CardFooter>
+          </Card>
+        </div>
       </div>
     )
   }
 
   return (
-    <div className="container py-8 max-w-2xl">
-      <Card>
-        <CardContent className="pt-6">
-          <div className="space-y-4">
-            <div className="flex justify-between items-center">
-              <h2 className="text-2xl font-bold">Question {currentQuestion + 1}</h2>
-              <span className="text-sm text-muted-foreground">
-                {currentQuestion + 1} of {quiz.questions.length}
-              </span>
+    <div className="flex items-center justify-center min-h-[80vh] w-full">
+      <div className=" py-8 max-w-2xl">
+     
+          <CardContent className="pt-8">
+            <div className="space-y-6">
+              <div className="flex justify-between items-center">
+                <h2 className="text-2xl font-bold">Question {currentQuestion + 1}</h2>
+                <span className="text-sm text-muted-foreground">
+                  {currentQuestion + 1} of {quiz.questions.length}
+                </span>
+              </div>
+              <p className="text-lg text-left font-medium my-6">{quiz.questions[currentQuestion].question}</p>
+              <RadioGroup onValueChange={handleAnswer} value={answers[currentQuestion]?.toString()} className="flex flex-col items-left space-y-4">
+                {quiz.questions[currentQuestion].options.map((option: string, index: number) => (
+                  <div key={index} className="flex items-left space-x-3 w-full max-w-md p-2 rounded-md hover:bg-slate-50">
+                    <RadioGroupItem value={index.toString()} id={`q${currentQuestion}-${index}`} />
+                    <Label htmlFor={`q${currentQuestion}-${index}`} className="cursor-pointer w-full">{option}</Label>
+                  </div>
+                ))}
+              </RadioGroup>
             </div>
-            <p className="text-lg">{quiz.questions[currentQuestion].question}</p>
-            <RadioGroup onValueChange={handleAnswer} value={answers[currentQuestion]?.toString()}>
-              {quiz.questions[currentQuestion].options.map((option: string, index: number) => (
-                <div key={index} className="flex items-center space-x-2">
-                  <RadioGroupItem value={index.toString()} id={`q${currentQuestion}-${index}`} />
-                  <Label htmlFor={`q${currentQuestion}-${index}`}>{option}</Label>
-                </div>
-              ))}
-            </RadioGroup>
-          </div>
-        </CardContent>
-        <CardFooter className="flex justify-end">
-          <Button onClick={handleNext} disabled={answers[currentQuestion] === undefined}>
-            {currentQuestion === quiz.questions.length - 1 ? "Finish" : "Next"}
-          </Button>
-        </CardFooter>
-      </Card>
+          </CardContent>
+          <CardFooter className="flex justify-center pt-4 pb-6">
+            <Button 
+              onClick={handleNext} 
+              disabled={answers[currentQuestion] === undefined}
+              className="px-6"
+            >
+              {currentQuestion === quiz.questions.length - 1 ? "Finish" : "Next"}
+            </Button>
+          </CardFooter>
+  
+      </div>
     </div>
   )
 }

@@ -43,7 +43,7 @@ export default function UploadPage() {
         
         // Redirect to dashboard after a short delay
         setTimeout(() => {
-          router.push("/dashboard")
+          router.push("/learn")
         }, 1000)
       } catch (error) {
         console.error("Error processing PDF:", error)
@@ -191,7 +191,7 @@ export default function UploadPage() {
                   </div>
                   <div className="space-y-1">
                     <p className="text-xl font-semibold text-primary">Processing Complete!</p>
-                    <p className="text-sm text-muted-foreground">Redirecting to your dashboard...</p>
+                    <p className="text-sm text-muted-foreground">Redirecting to your Course...</p>
                   </div>
                 </div>
               )}
