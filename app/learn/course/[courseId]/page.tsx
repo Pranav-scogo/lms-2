@@ -210,6 +210,18 @@ export default function CourseDetailPage() {
             </Link>
           </Button>
         </div>
+
+        {/* Add the final quiz button */}
+        {hasFinalQuiz && (
+          <div className="mt-6">
+            <Button className="w-full" asChild>
+              <Link href={`/learn/course/${courseId}/final-quiz`}>
+                <Award className="mr-2 h-5 w-5" />
+                Take Comprehensive Final Quiz
+              </Link>
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   )

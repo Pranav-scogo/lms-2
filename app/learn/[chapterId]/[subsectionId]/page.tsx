@@ -11,6 +11,7 @@ import { useState, useEffect } from "react"
 import { ProcessPdfResponse } from "@/types/api"
 import { mapApiResponseToCourse } from "@/lib/course-mapper"
 import { Course } from "@/types/course"
+import { ModuleDetail } from "@/components/learning/module-detail"
 
 export default function SubsectionPage() {
   const params = useParams()
@@ -131,12 +132,13 @@ export default function SubsectionPage() {
               )}
             </div>
 
-            <Card className="p-8 prose prose-slate max-w-none">
-              {subsection.content.split("\n\n").map((paragraph, index) => (
-                <p key={index} className="text-lg leading-relaxed">
-                  {paragraph}
-                </p>
-              ))}
+            <Card className="p-8">
+              <ModuleDetail
+                title={subsection.title}
+                keyConcepts={subsection.key_concepts || []}
+                learningObjectives={subsection.learning_objectives || []}
+                summary={subsection.content}
+              />
             </Card>
 
             <div className="flex items-center justify-between pt-4">

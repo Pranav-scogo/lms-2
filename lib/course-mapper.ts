@@ -12,30 +12,33 @@ export function mapApiResponseToCourse(
   apiResponse: ProcessPdfResponse,
   title: string = "Your Uploaded Course"
 ): Course {
-  // Create a chapter from each section in the API response
-  const chapters: Chapter[] = apiResponse.sections.map((section, sectionIndex) => {
-    // Create a subsection for each section's content
+  // Create a chapter from each module in the API response
+  const chapters: Chapter[] = apiResponse.modules.map((module, moduleIndex) => {
+    // Create a subsection for each module's content
     const subsections: SubSection[] = [
       {
-        id: `section-${section.page}`,
-        title: `Page ${section.page} Content`,
-        content: section.summary,
+        id: `module-${moduleIndex + 1}`,
+        title: module.module_name,
+        content: module.content_summary,
         completed: false,
+        key_concepts: module.key_concepts,
+        learning_objectives: module.learning_objectives,
       }
     ];
 
     return {
-      id: `chapter-${sectionIndex + 1}`,
-      title: `Chapter ${sectionIndex + 1}`,
-      description: section.summary.substring(0, 100) + "...",
+      id: `chapter-${moduleIndex + 1}`,
+      title: module.module_name,
+      description: module.content_summary.substring(0, 100) + "...",
       subsections,
       quiz: {
-        id: `quiz-${sectionIndex + 1}`,
-        questions: section.questions.map((q, idx) => ({
+        id: `quiz-${moduleIndex + 1}`,
+        questions: module.section_quiz.map((q, idx) => ({
           id: idx + 1,
           question: q.question,
           options: q.options,
           correctAnswer: q.correctAnswer,
+          explanation: q.explanation,
         })).slice(0, 5), // Limit to 5 questions per chapter
       },
       progress: 0,
@@ -46,9 +49,18 @@ export function mapApiResponseToCourse(
   const course: Course = {
     id: `course-${Date.now()}`,
     title,
-    description: apiResponse.final_summary,
+    description: apiResponse.comprehensive_summary,
     chapters,
     totalProgress: 0,
+    // Store the final quiz separately since it spans all modules
+    final_quiz: apiResponse.final_quiz.map((q, idx) => ({
+      id: idx + 1,
+      question: q.question,
+      options: q.options,
+      correctAnswer: q.correctAnswer,
+      explanation: q.explanation,
+      related_modules: q.related_modules,
+    })),
   };
 
   return course;

@@ -5,8 +5,17 @@ import { Progress } from "@/components/ui/progress"
 import { ProcessPdfResponse } from "@/types/api"
 import { Course } from "@/types/course"
 
+// Course interface for generated courses
+interface CourseInfo {
+  id: number;
+  name: string;
+  progress: number;
+  chapters: number;
+  completedChapters: number;
+}
+
 // Fallback data when no courses are available
-const fallbackCourses = [
+const fallbackCourses: CourseInfo[] = [
   // {
   //   id: 1,
   //   name: "Machine Learning Fundamentals",
@@ -30,15 +39,6 @@ const fallbackCourses = [
   // },
 ]
 
-// Course interface for generated courses
-interface CourseInfo {
-  id: number;
-  name: string;
-  progress: number;
-  chapters: number;
-  completedChapters: number;
-}
-
 export function CourseProgress() {
   const [courses, setCourses] = useState<CourseInfo[]>(fallbackCourses);
   const [hasUploadedCourse, setHasUploadedCourse] = useState(false);
@@ -56,7 +56,7 @@ export function CourseProgress() {
           id: Date.now(), // Use timestamp as unique ID
           name: "Your Uploaded Course",
           progress: 0, // Initial progress is 0%
-          chapters: courseData.sections.length,
+          chapters: courseData.modules ? courseData.modules.length : 0,
           completedChapters: 0,
         };
         
